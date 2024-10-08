@@ -6,6 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
+# NodeJS
+node_modules/
+venv/
+package-lock.json
+
+.DS_store
+
 # Distribution / packaging
 .Python
 build/
