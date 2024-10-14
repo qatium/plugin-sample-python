@@ -1,7 +1,7 @@
 import "./main"
 import fs from 'fs'
 
-describe("Panel tests", () => {
+describe("ui", () => {
   const domParser = new DOMParser()
   const html = fs.readFileSync("src/panel/index.html", "utf8")
 
@@ -14,11 +14,11 @@ describe("Panel tests", () => {
        data: {
           source: "qatium",
           type: "message",
-          payload: 123
+          payload: 5
         }
       })
     )
 
-    expect(window.document.body.innerHTML).toBe("123")
+    expect(window.document.body.querySelector("#valves")?.innerHTML).toBe("5")
   })
 })

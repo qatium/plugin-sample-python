@@ -1,21 +1,42 @@
-from pyodide import ffi
-from typing import Protocol
-
-class Asset(Protocol):
-  @property
-  def id(self) -> str:
-    pass
+from typing import Any
+import _sdk
 
 class Network:
-  def __init__(self, sdk):
-    self.sdk = sdk
-  def get_asset(self, assetId: str) -> Asset:
-    return self.sdk["network"]["getAsset"](ffi.to_js(assetId))
+  def getValves(self, predicate) -> list[Any]:
+    """
+    Retrieve all valves that match a predicate.
+
+    Args:
+        predicate (function): A function that takes an asset and returns a boolean value.
+
+    Returns:
+        list[Asset]: A list of assets that match the predicate.
+    """
+    pass
+
+  def setStatus(self, assetId, status):
+    """
+    Set the status of an asset.
+
+    Args:
+        assetId (str): The unique identifier of the asset to set the status for.
+        status (AssetStatus): The new status of the asset.
+    """
+    pass
+
+
+class UI:
+  def sendMessage(self, message: str):
+    """
+    Send a message to the user interface.
+
+    Args:
+        message (str): The message to send to the user interface.
+    """
+    pass
 
 class SDK:
-  def __init__(self):
-    self.sdk = globals()["sdk"]
+  network = Network()
+  ui = UI()
 
-  @property
-  def network(self) -> Network:
-    return Network(self.sdk)
+SDK = _sdk
