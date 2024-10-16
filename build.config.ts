@@ -5,6 +5,26 @@ import { parseArgs } from "util";
 import chokidar from "chokidar";
 import { zip } from "zip-a-folder";
 import fs from "fs";
+import path from "path";
+
+const REQUIREMENTS_PATH = "requirements.txt";
+const patchManifestWithPython = () => {
+  const manifestPath = path.resolve("metadata", "manifest.json");
+  const requirementsPath = path.resolve(REQUIREMENTS_PATH);
+
+  const pythonPackages = fs.readFileSync(requirementsPath)
+    .toString()
+    .split("\n")
+    .filter((pkg) => pkg.length > 0);
+
+  const manifestContent = fs.readFileSync(manifestPath, "utf-8");
+  const manifest = JSON.parse(manifestContent);
+
+  manifest.python = manifest.python ?? {};
+  manifest.python.packages = pythonPackages;
+
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), "utf-8");
+}
 
 const {
   values: { dev: isDev }
@@ -59,17 +79,22 @@ const panelConfig: InlineConfig = {
 };
 
 const pluginDirectory = "src/plugin";
-const watchPython = (changed: () => void) => {
-  const watcher = chokidar.watch([pluginDirectory], {
+const watchPython = (changed: (path: string) => void) => {
+  const watcher = chokidar.watch([pluginDirectory, REQUIREMENTS_PATH], {
     persistent: true
   });
 
-  watcher.on("all", changed);
+  watcher.on("all", (_, path) => {
+    changed(path);
+  });
 }
 
 const pythonZip = "metadata/plugin.zip";
-const zipPlugin = async () => {
-  console.log("Zipping plugin...")
+const buildPython = async (path?: string) => {
+  console.log("Bundling python code...")
+  if (path?.includes(REQUIREMENTS_PATH)) {
+    return patchManifestWithPython();
+  }
   if (fs.existsSync(pythonZip)) {
     fs.unlinkSync(pythonZip)
   }
@@ -83,15 +108,15 @@ const zipPlugin = async () => {
   await new Promise((resolve) => setTimeout(() => resolve(true), 1000));
 
   if (isDev) {
-    await zipPlugin();
-    watchPython(zipPlugin);
+    await buildPython();
+    watchPython(buildPython);
     const server = await createServer(panelConfig);
 
     await server.listen();
     server.printUrls();
     server.bindCLIShortcuts({ print: true });
   } else {
-    await zipPlugin();
+    await buildPython();
     await build(panelConfig);
   }
 })();

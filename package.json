@@ -6,10 +6,9 @@
   "scripts": {
     "clean": "rimraf dist src/public/plugin.js",
     "dev": "tsx build.config.ts --dev",
-    "build": "tsc --project src/panel/tsconfig.json && tsc --project src/plugin/tsconfig.json && tsx build.config.ts",
+    "build": "tsc --project src/panel/tsconfig.json && tsx build.config.ts",
     "test": "jest --verbose",
-    "test:watch": "pnpm run test --watchAll -i --no-cache",
-    "postinstall": "python3 -m venv ./venv && source ./venv/bin/activate && pip install pyinstaller"
+    "test:watch": "pnpm run test --watchAll -i --no-cache"
   },
   "devDependencies": {
     "@qatium/sdk-testing-library": "latest",
