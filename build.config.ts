@@ -116,7 +116,7 @@ const buildPython = async (path?: string) => {
     server.printUrls();
     server.bindCLIShortcuts({ print: true });
   } else {
-    await buildPython();
+    await buildPython(REQUIREMENTS_PATH);
     await build(panelConfig);
   }
 })();
