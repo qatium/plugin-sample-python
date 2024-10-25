@@ -1,4 +1,4 @@
 from .plugin import MyPlugin
-from qatiumsdk import register_plugin
+from qatiumsdk import init
 
-register_plugin(MyPlugin())
+init(MyPlugin())
